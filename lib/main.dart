@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _calculateFinalRowFields() {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text("Sending Message"),
+      content: Text("Calculating"),
     ));
 
     double row1value1temp = double.parse(row1value1);
@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     setState(() {
-      row7value1 = (row6value1temp - row5value1temp).toString();
+      row7value1 = (row6value1temp - row5value1temp).toStringAsFixed(2);
     });
 
     double row6value5temp = double.parse(row6value5);
@@ -251,8 +251,14 @@ class _MyHomePageState extends State<MyHomePage> {
       row2value5 = "00";
       row3value5 = "00";
 
+      row4value5 = "00";
+
+      row5value1 = "";
       row5value5 = "00";
       row6value5 = "00";
+
+      row7value1 = "";
+      row7value5 = "Total";
     });
   }
 
