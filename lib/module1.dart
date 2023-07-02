@@ -6,7 +6,32 @@ Widget rowInputField(
     TextEditingController fieldTextController,
     Function(String value) onchanged) {
   return SizedBox(
-    width: 100,
+    width: 80,
+    height: 50,
+    child: TextField(
+      decoration: InputDecoration(
+        labelText: labelText,
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(width: 1, color: Colors.cyanAccent),
+        ),
+      ),
+      keyboardType: const TextInputType.numberWithOptions(),
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
+      ],
+      controller: fieldTextController,
+      onChanged: onchanged,
+    ),
+  );
+}
+
+Widget rowInputFieldPage2(
+    String labelText,
+    TextEditingController fieldTextController,
+    Function(String value) onchanged) {
+  return SizedBox(
+    width: 80,
+    height: 30,
     child: TextField(
       decoration: InputDecoration(
         labelText: labelText,
@@ -26,8 +51,19 @@ Widget rowInputField(
 
 Widget textField(String text, TextAlign textAlign) {
   return SizedBox(
-    width: 100,
+    width: 80,
     height: 50,
+    child: Text(
+      text,
+      textAlign: textAlign,
+    ),
+  );
+}
+
+Widget textFieldPage2(String text, TextAlign textAlign) {
+  return SizedBox(
+    width: 50,
+    height: 30,
     child: Text(
       text,
       textAlign: textAlign,
@@ -49,7 +85,7 @@ Widget dateTextField() {
 
 Widget labelTextField(String text, TextAlign textAlign) {
   return SizedBox(
-    width: 100,
+    width: 80,
     child: Text(
       text,
       textAlign: textAlign,
@@ -60,7 +96,7 @@ Widget labelTextField(String text, TextAlign textAlign) {
 
 Widget subLabelTextField(String text, TextAlign textAlign) {
   return SizedBox(
-    width: 100,
+    width: 80,
     child: Text(
       text,
       textAlign: textAlign,
