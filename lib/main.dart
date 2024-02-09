@@ -1,5 +1,6 @@
 import 'package:dairycalculations/page1.dart';
 import 'package:dairycalculations/page2.dart';
+import 'package:dairycalculations/page4.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -75,6 +76,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('10 Days Calculation'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyPage4(
+                        title: 'Daily Calculation',
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('33 Days Calculation'),
               ),
             ),
           ],
