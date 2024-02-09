@@ -31,7 +31,7 @@ Widget rowInputFieldPage2(
     Function(String value) onchanged) {
   return SizedBox(
     width: 80,
-    height: 30,
+    height: 40,
     child: TextField(
       decoration: InputDecoration(
         labelText: labelText,
@@ -51,7 +51,7 @@ Widget rowInputFieldPage2(
 
 Widget textField(String text, TextAlign textAlign) {
   return SizedBox(
-    width: 80,
+    width: 70,
     height: 50,
     child: Text(
       text,
