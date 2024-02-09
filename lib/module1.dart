@@ -33,19 +33,19 @@ Widget rowInputFieldPage2(
     width: 80,
     height: 40,
     child: TextField(
-      decoration: InputDecoration(
-        labelText: labelText,
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(width: 1, color: Colors.cyanAccent),
+        decoration: InputDecoration(
+          labelText: labelText,
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(width: 1, color: Colors.cyanAccent),
+          ),
         ),
-      ),
-      keyboardType: const TextInputType.numberWithOptions(),
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
-      ],
-      controller: fieldTextController,
-      onChanged: onchanged,
-    ),
+        keyboardType: const TextInputType.numberWithOptions(),
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
+        ],
+        controller: fieldTextController,
+        onChanged: onchanged,
+        textInputAction: TextInputAction.next),
   );
 }
 
