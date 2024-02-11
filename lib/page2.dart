@@ -238,16 +238,46 @@ class _Page2State extends State<MyPage2> {
     fieldTextControllerRow10Field2.clear();
 
     setState(() {
+      row1value1 = "";
+      row1value2 = "";
       row1value3 = "";
+
+      row2value1 = "";
+      row2value2 = "";
       row2value3 = "";
+
+      row3value1 = "";
+      row3value2 = "";
       row3value3 = "";
+
+      row4value1 = "";
+      row4value2 = "";
       row4value3 = "";
+
+      row5value1 = "";
+      row5value2 = "";
       row5value3 = "";
+
+      row6value1 = "";
+      row6value2 = "";
       row6value3 = "";
+
+      row7value1 = "";
+      row7value2 = "";
       row7value3 = "";
+
+      row8value1 = "";
+      row8value2 = "";
       row8value3 = "";
+
+      row9value1 = "";
+      row9value2 = "";
       row9value3 = "";
+
+      row10value1 = "";
+      row10value2 = "";
       row10value3 = "";
+
       row11value1 = "";
       row11value2 = "";
       row11value3 = "";
@@ -384,7 +414,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('1.', TextAlign.left),
+                      textFieldColumn1('1.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow1Field1, _setRow1Value1),
                       rowInputFieldPage2(
@@ -396,7 +426,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('2.', TextAlign.left),
+                      textFieldColumn1('2.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow2Field1, _setRow2Value1),
                       rowInputFieldPage2(
@@ -408,7 +438,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('3.', TextAlign.left),
+                      textFieldColumn1('3.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow3Field1, _setRow3Value1),
                       rowInputFieldPage2(
@@ -420,7 +450,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('4.', TextAlign.left),
+                      textFieldColumn1('4.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow4Field1, _setRow4Value1),
                       rowInputFieldPage2(
@@ -432,7 +462,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('5.', TextAlign.left),
+                      textFieldColumn1('5.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow5Field1, _setRow5Value1),
                       rowInputFieldPage2(
@@ -444,7 +474,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('6.', TextAlign.left),
+                      textFieldColumn1('6.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow6Field1, _setRow6Value1),
                       rowInputFieldPage2(
@@ -456,7 +486,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('7.', TextAlign.left),
+                      textFieldColumn1('7.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow7Field1, _setRow7Value1),
                       rowInputFieldPage2(
@@ -468,7 +498,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('8.', TextAlign.left),
+                      textFieldColumn1('8.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow8Field1, _setRow8Value1),
                       rowInputFieldPage2(
@@ -480,7 +510,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('9.', TextAlign.left),
+                      textFieldColumn1('9.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow9Field1, _setRow9Value1),
                       rowInputFieldPage2(
@@ -492,7 +522,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('10.', TextAlign.left),
+                      textFieldColumn1('10.', TextAlign.left),
                       rowInputFieldPage2(
                           '', fieldTextControllerRow10Field1, _setRow10Value1),
                       rowInputFieldPage2(
@@ -504,7 +534,7 @@ class _Page2State extends State<MyPage2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      textFieldPage2('Total', TextAlign.left),
+                      textFieldColumn1('Total', TextAlign.left),
                       textField(row11value1, TextAlign.left),
                       textField('', TextAlign.center),
                       textField(row11value3, TextAlign.right),

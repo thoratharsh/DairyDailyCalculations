@@ -30,8 +30,8 @@ Widget rowInputFieldPage2(
     TextEditingController fieldTextController,
     Function(String value) onchanged) {
   return SizedBox(
-    width: 80,
-    height: 40,
+    width: 90,
+    height: 30,
     child: TextField(
         decoration: InputDecoration(
           labelText: labelText,
@@ -51,8 +51,19 @@ Widget rowInputFieldPage2(
 
 Widget textField(String text, TextAlign textAlign) {
   return SizedBox(
-    width: 70,
-    height: 50,
+    width: 90,
+    height: 30,
+    child: Text(
+      text,
+      textAlign: textAlign,
+    ),
+  );
+}
+
+Widget textFieldColumn1(String text, TextAlign textAlign) {
+  return SizedBox(
+    width: 35,
+    height: 40,
     child: Text(
       text,
       textAlign: textAlign,
@@ -62,7 +73,7 @@ Widget textField(String text, TextAlign textAlign) {
 
 Widget textFieldPage2(String text, TextAlign textAlign) {
   return SizedBox(
-    width: 50,
+    width: 90,
     height: 30,
     child: Text(
       text,
