@@ -1,102 +1,44 @@
-import 'package:dairycalculations/page1.dart';
-import 'package:dairycalculations/page2.dart';
-import 'package:dairycalculations/page4.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'theme/app_theme.dart';
+import 'pages/home_page.dart';
+import 'services/database_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SQLite database factory for all platforms
+  DatabaseService.initializeDatabaseFactory();
+
+  // Set preferred orientations
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: AppColors.cream,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+
+  runApp(const DairyDailyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class DairyDailyApp extends StatelessWidget {
+  const DairyDailyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dairy Calculations',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Dairy daily calculations'),
+      title: 'Dairy Daily',
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MyPage1(
-                        title: 'Daily Calculation',
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Daily Calculation'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MyPage2(
-                        title: 'Daily Calculation',
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('10 Days Calculation'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MyPage4(
-                        title: 'Daily Calculation',
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('33 Days Calculation'),
-              ),
-            ),
-          ],
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      home: const HomePage(),
     );
   }
 }

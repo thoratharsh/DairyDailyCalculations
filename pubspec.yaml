@@ -31,6 +31,13 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # SQLite for local database storage
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0+1
+  path: ^1.8.3
+
+  # Date formatting
+  intl: ^0.18.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
