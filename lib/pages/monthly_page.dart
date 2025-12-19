@@ -11,7 +11,7 @@ class MonthlyPage extends StatefulWidget {
 
 class _MonthlyPageState extends State<MonthlyPage>
     with SingleTickerProviderStateMixin {
-  static const int _rowCount = 33;
+  static const int _rowCount = 50;
 
   late final List<TextEditingController> _quantityControllers;
   late final List<TextEditingController> _rateControllers;

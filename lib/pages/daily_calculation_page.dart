@@ -64,10 +64,13 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
 
   /// Load data for a specific date from database
   Future<void> _loadDataForDate(DateTime date) async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final calculation = await _dbService.getDailyCalculationByDate(date);
+
+      if (!mounted) return;
 
       if (calculation != null) {
         _populateFromCalculation(calculation);
@@ -79,9 +82,13 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
         _currentRecordId = null;
       }
     } catch (e) {
-      _showErrorSnackBar('Failed to load data: $e');
+      if (mounted) {
+        _showErrorSnackBar('Failed to load data: $e');
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -188,8 +195,12 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     );
 
     // Save to database
+    final isUpdate = _hasExistingData;
     try {
       await _dbService.saveDailyCalculation(calculation);
+
+      if (!mounted) return;
+
       _hasExistingData = true;
 
       // Reload to get the ID
@@ -198,9 +209,11 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
         _currentRecordId = saved.id;
       }
 
-      _showSuccessSnackBar(_hasExistingData ? 'Data updated' : 'Data saved');
+      _showSuccessSnackBar(isUpdate ? 'Data updated' : 'Data saved');
     } catch (e) {
-      _showErrorSnackBar('Failed to save: $e');
+      if (mounted) {
+        _showErrorSnackBar('Failed to save: $e');
+      }
     }
   }
 
@@ -295,12 +308,17 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     if (confirmed == true) {
       try {
         await _dbService.deleteDailyCalculation(_currentRecordId!);
+
+        if (!mounted) return;
+
         _clearAllFields();
         _hasExistingData = false;
         _currentRecordId = null;
         _showSuccessSnackBar('Entry deleted');
       } catch (e) {
-        _showErrorSnackBar('Failed to delete: $e');
+        if (mounted) {
+          _showErrorSnackBar('Failed to delete: $e');
+        }
       }
     }
   }
@@ -863,18 +881,31 @@ class _HistoryPageState extends State<_HistoryPage> {
   }
 
   Future<void> _loadHistory() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     try {
       final calculations = await _dbService.getAllDailyCalculations();
       final summary = await _dbService.getDailyCalculationsSummary();
+
+      if (!mounted) return;
+
       setState(() {
         _calculations = calculations;
         _summary = summary;
       });
     } catch (e) {
-      // Handle error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load history: $e'),
+            backgroundColor: AppColors.barnRed,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
