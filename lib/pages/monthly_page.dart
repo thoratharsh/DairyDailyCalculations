@@ -177,7 +177,7 @@ class _MonthlyPageState extends State<MonthlyPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: _buildActionButtons(),
           ),
           _buildSummaryCard(),
@@ -278,8 +278,8 @@ class _MonthlyPageState extends State<MonthlyPage>
 
   Widget _buildSummaryCard() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -287,24 +287,24 @@ class _MonthlyPageState extends State<MonthlyPage>
             AppColors.goldenHay.withOpacity(0.1),
           ],
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.forestGreen.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildSummaryItem(
-            'Total Quantity',
+            'Total Qty',
             _totalQuantity == 0 ? '—' : _formatNumber(_totalQuantity),
             Icons.water_drop_outlined,
           ),
           Container(
-            height: 40,
+            height: 30,
             width: 1,
             color: AppColors.border,
           ),
           _buildSummaryItem(
-            'Total Amount',
+            'Total Amt',
             _totalAmount == 0 ? '—' : '₹${_formatNumber(_totalAmount)}',
             Icons.currency_rupee_rounded,
           ),
@@ -315,20 +315,22 @@ class _MonthlyPageState extends State<MonthlyPage>
 
   Widget _buildSummaryItem(String label, String value, IconData icon) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: AppColors.forestGreen),
-            const SizedBox(width: 4),
-            Text(label, style: AppTextStyles.caption),
+            Icon(icon, size: 12, color: AppColors.forestGreen),
+            const SizedBox(width: 3),
+            Text(label, style: AppTextStyles.caption.copyWith(fontSize: 10)),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           value,
-          style: AppTextStyles.heading2.copyWith(
+          style: AppTextStyles.heading3.copyWith(
             color: AppColors.forestGreen,
+            fontSize: 16,
           ),
         ),
       ],
@@ -339,14 +341,14 @@ class _MonthlyPageState extends State<MonthlyPage>
     return FadeTransition(
       opacity: _animController,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 70),
         decoration: BoxDecoration(
           color: AppColors.warmWhite,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.border),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: Column(
             children: [
               _buildHeader(),
@@ -354,7 +356,7 @@ class _MonthlyPageState extends State<MonthlyPage>
               Expanded(
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   itemCount: _rowCount,
                   itemBuilder: (context, index) {
                     return _buildRow(index);
@@ -370,30 +372,32 @@ class _MonthlyPageState extends State<MonthlyPage>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.milkWhite,
       ),
       child: Row(
         children: [
-          const SizedBox(width: 40),
-          const SizedBox(width: 12),
+          const SizedBox(width: 30),
+          const SizedBox(width: 6),
           Expanded(
+            flex: 3,
             child: Center(
-              child: Text('Qty (L)', style: AppTextStyles.caption),
+              child: Text('Qty (L)', style: AppTextStyles.caption.copyWith(fontSize: 11)),
             ),
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           Expanded(
+            flex: 3,
             child: Center(
-              child: Text('Rate (₹)', style: AppTextStyles.caption),
+              child: Text('Rate ₹', style: AppTextStyles.caption.copyWith(fontSize: 11)),
             ),
           ),
-          const SizedBox(width: 24),
-          SizedBox(
-            width: 80,
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
             child: Text('Amount',
-                style: AppTextStyles.caption, textAlign: TextAlign.right),
+                style: AppTextStyles.caption.copyWith(fontSize: 11), textAlign: TextAlign.right),
           ),
         ],
       ),
@@ -402,44 +406,56 @@ class _MonthlyPageState extends State<MonthlyPage>
 
   Widget _buildRow(int index) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: index.isEven ? Colors.transparent : AppColors.cream.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(8),
+        color: index.isEven ? Colors.transparent : AppColors.cream.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Row(
         children: [
-          SerialBadge(number: '${index + 1}'),
-          const SizedBox(width: 12),
+          SerialBadge(number: '${index + 1}', isCompact: true),
+          const SizedBox(width: 6),
           Expanded(
+            flex: 3,
             child: NumberInputField(
               controller: _quantityControllers[index],
               hint: '0',
               onChanged: (_) => _updateRowResult(index),
+              isUltraCompact: true,
             ),
           ),
-          const SizedBox(width: 6),
-          const Text('×', style: TextStyle(color: AppColors.textLight, fontSize: 12)),
-          const SizedBox(width: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: Text('×', style: TextStyle(color: AppColors.textLight, fontSize: 11)),
+          ),
           Expanded(
+            flex: 3,
             child: NumberInputField(
               controller: _rateControllers[index],
               hint: '0',
               onChanged: (_) => _updateRowResult(index),
+              isUltraCompact: true,
             ),
           ),
-          const SizedBox(width: 6),
-          const Text('=', style: TextStyle(color: AppColors.textLight, fontSize: 12)),
-          const SizedBox(width: 6),
-          ValueDisplay(
-            value: _formatNumber(_results[index]),
-            width: 80,
-            isHighlighted: _results[index] > 0,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: Text('=', style: TextStyle(color: AppColors.textLight, fontSize: 11)),
+          ),
+          Expanded(
+            flex: 3,
+            child: ValueDisplay(
+              value: _formatNumber(_results[index]),
+              isHighlighted: _results[index] > 0,
+              isUltraCompact: true,
+              minWidth: 45,
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+
 

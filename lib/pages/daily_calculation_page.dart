@@ -418,16 +418,16 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildDateSelector(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   _buildActionButtons(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   _buildCalculationTable(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   _buildResultCard(),
                 ],
               ),
@@ -441,36 +441,29 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     return GestureDetector(
       onTap: _selectDate,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.warmWhite,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _hasExistingData
                 ? AppColors.forestGreen.withValues(alpha: 0.5)
                 : AppColors.border,
             width: _hasExistingData ? 2 : 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Row(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: AppColors.accentGradient,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -479,7 +472,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                     '${_selectedDate.day}',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                       height: 1,
                     ),
@@ -488,7 +481,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                     DateFormat('MMM').format(_selectedDate).toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white70,
-                      fontSize: 9,
+                      fontSize: 8,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 1,
                     ),
@@ -496,7 +489,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -609,11 +602,12 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
 
   Widget _buildCalculationTable() {
     return GradientCard(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildTableHeader(),
-          const Divider(color: AppColors.border, height: 24),
+          const Divider(color: AppColors.border, height: 16),
           _buildInputRow(
             'Shillak Stock',
             _shillakLitresController,
@@ -656,28 +650,34 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   }
 
   Widget _buildTableHeader() {
-    return Row(
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text('Description', style: AppTextStyles.caption),
-        ),
-        Expanded(
-          child: Center(
-            child: Text('Litres', style: AppTextStyles.caption),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 75,
+            child: Text('Item', style: AppTextStyles.caption.copyWith(fontSize: 11)),
           ),
-        ),
-        Expanded(
-          child: Center(
-            child: Text('₹/Litre', style: AppTextStyles.caption),
+          Expanded(
+            flex: 3,
+            child: Center(
+              child: Text('Litres', style: AppTextStyles.caption.copyWith(fontSize: 11)),
+            ),
           ),
-        ),
-        SizedBox(
-          width: 90,
-          child: Text('Total ₹',
-              style: AppTextStyles.caption, textAlign: TextAlign.right),
-        ),
-      ],
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
+            child: Center(
+              child: Text('Rate ₹', style: AppTextStyles.caption.copyWith(fontSize: 11)),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Text('Total ₹',
+                style: AppTextStyles.caption.copyWith(fontSize: 11), textAlign: TextAlign.right),
+          ),
+        ],
+      ),
     );
   }
 
@@ -688,29 +688,46 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     String total,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          RowLabel(text: label),
+          RowLabel(text: label, width: 75),
           Expanded(
+            flex: 3,
             child: NumberInputField(
               controller: litresController,
-              hint: '0',
+              hint: 'Litres',
+              isUltraCompact: true,
             ),
           ),
-          const SizedBox(width: 8),
-          const Text('×', style: TextStyle(color: AppColors.textLight)),
-          const SizedBox(width: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              '×',
+              style: TextStyle(
+                color: AppColors.textLight,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           Expanded(
+            flex: 3,
             child: NumberInputField(
               controller: rateController,
-              hint: '0',
+              hint: 'Rate',
+              isUltraCompact: true,
             ),
           ),
-          const SizedBox(width: 8),
-          ValueDisplay(
-            value: total,
-            isHighlighted: total.isNotEmpty,
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 4,
+            child: ValueDisplay(
+              value: total,
+              isHighlighted: total.isNotEmpty,
+              isUltraCompact: true,
+              minWidth: 50,
+            ),
           ),
         ],
       ),
@@ -725,41 +742,66 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     bool isHighlighted = false,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       decoration: BoxDecoration(
         color: isHighlighted
             ? AppColors.forestGreen.withValues(alpha: 0.08)
             : isSubtotal
                 ? AppColors.goldenHay.withValues(alpha: 0.1)
                 : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
         border: isHighlighted || isSubtotal
             ? Border.all(
                 color: isHighlighted
-                    ? AppColors.forestGreen.withValues(alpha: 0.2)
-                    : AppColors.goldenHay.withValues(alpha: 0.3))
+                    ? AppColors.forestGreen.withValues(alpha: 0.25)
+                    : AppColors.goldenHay.withValues(alpha: 0.35),
+                width: 1,
+              )
             : null,
       ),
       child: Row(
         children: [
           RowLabel(
             text: label,
+            width: 75,
             isSubLabel: isSubtotal,
           ),
           Expanded(
-            child: Center(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+              decoration: BoxDecoration(
+                color: AppColors.warmWhite,
+                borderRadius: BorderRadius.circular(6),
+              ),
               child: Text(
                 litres.isEmpty ? '—' : litres,
-                style: isHighlighted ? AppTextStyles.total : AppTextStyles.number,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w600,
+                  color: isHighlighted ? AppColors.forestGreen : AppColors.textPrimary,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
               ),
             ),
           ),
-          const Expanded(child: SizedBox()),
-          ValueDisplay(
-            value: total,
-            isTotal: isHighlighted,
-            isHighlighted: isSubtotal,
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
+            child: const SizedBox(),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 4,
+            child: ValueDisplay(
+              value: total,
+              isTotal: isHighlighted,
+              isHighlighted: isSubtotal,
+              isUltraCompact: true,
+              minWidth: 50,
+            ),
           ),
         ],
       ),
@@ -769,7 +811,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   Widget _buildResultCard() {
     final isPositive = _finalDiffTotal >= 0;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -784,7 +826,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                   AppColors.barnRed.withValues(alpha: 0.05),
                 ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isPositive
               ? AppColors.forestGreen.withValues(alpha: 0.3)
@@ -801,28 +843,28 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                     ? Icons.trending_up_rounded
                     : Icons.trending_down_rounded,
                 color: isPositive ? AppColors.forestGreen : AppColors.barnRed,
-                size: 28,
+                size: 22,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Text(
                 'Final Difference',
-                style: AppTextStyles.heading3,
+                style: AppTextStyles.heading3.copyWith(fontSize: 16),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Column(
                 children: [
                   Text('Litres', style: AppTextStyles.caption),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     _finalDiffLitres == 0
                         ? '—'
                         : _formatNumber(_finalDiffLitres),
-                    style: AppTextStyles.heading2.copyWith(
+                    style: AppTextStyles.heading3.copyWith(
                       color:
                           isPositive ? AppColors.forestGreen : AppColors.barnRed,
                     ),
@@ -830,19 +872,19 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                 ],
               ),
               Container(
-                height: 40,
+                height: 30,
                 width: 1,
                 color: AppColors.border,
               ),
               Column(
                 children: [
-                  Text('Total Amount', style: AppTextStyles.caption),
-                  const SizedBox(height: 4),
+                  Text('Total Amt', style: AppTextStyles.caption),
+                  const SizedBox(height: 2),
                   Text(
                     _finalDiffTotal == 0
                         ? '—'
                         : '₹${_formatNumber(_finalDiffTotal)}',
-                    style: AppTextStyles.heading2.copyWith(
+                    style: AppTextStyles.heading3.copyWith(
                       color:
                           isPositive ? AppColors.forestGreen : AppColors.barnRed,
                     ),

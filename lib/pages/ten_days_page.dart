@@ -127,7 +127,7 @@ class _TenDaysPageState extends State<TenDaysPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
             child: _buildActionButtons(),
           ),
           Expanded(
@@ -166,12 +166,18 @@ class _TenDaysPageState extends State<TenDaysPage>
   Widget _buildCalculationList() {
     return FadeTransition(
       opacity: _animController,
-      child: GradientCard(
-        padding: const EdgeInsets.all(16),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.warmWhite,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
         child: Column(
           children: [
             _buildHeader(),
-            const Divider(color: AppColors.border, height: 16),
+            const Divider(color: AppColors.border, height: 10),
             Expanded(
               child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
@@ -181,7 +187,7 @@ class _TenDaysPageState extends State<TenDaysPage>
                 },
               ),
             ),
-            const Divider(color: AppColors.border, height: 16),
+            const Divider(color: AppColors.border, height: 10),
             _buildTotalRow(),
           ],
         ),
@@ -194,22 +200,24 @@ class _TenDaysPageState extends State<TenDaysPage>
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
         children: [
-          const SizedBox(width: 40),
-          const SizedBox(width: 12),
+          const SizedBox(width: 30),
+          const SizedBox(width: 8),
           Expanded(
+            flex: 3,
             child: Center(
-              child: Text('Quantity', style: AppTextStyles.caption),
+              child: Text('Qty (L)', style: AppTextStyles.caption),
             ),
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           Expanded(
+            flex: 3,
             child: Center(
-              child: Text('Rate (₹)', style: AppTextStyles.caption),
+              child: Text('Rate ₹', style: AppTextStyles.caption),
             ),
           ),
-          const SizedBox(width: 24),
-          SizedBox(
-            width: 90,
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
             child: Text('Amount',
                 style: AppTextStyles.caption, textAlign: TextAlign.right),
           ),
@@ -220,41 +228,50 @@ class _TenDaysPageState extends State<TenDaysPage>
 
   Widget _buildRow(int index) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
       decoration: BoxDecoration(
-        color: index.isEven ? Colors.transparent : AppColors.milkWhite,
-        borderRadius: BorderRadius.circular(8),
+        color: index.isEven ? Colors.transparent : AppColors.milkWhite.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         children: [
-          SerialBadge(number: '${index + 1}'),
-          const SizedBox(width: 12),
+          SerialBadge(number: '${index + 1}', isCompact: true),
+          const SizedBox(width: 8),
           Expanded(
+            flex: 3,
             child: NumberInputField(
               controller: _quantityControllers[index],
               hint: '0',
               onChanged: (_) => _updateRowResult(index),
+              isUltraCompact: true,
             ),
           ),
-          const SizedBox(width: 8),
-          const Text('×', style: TextStyle(color: AppColors.textLight)),
-          const SizedBox(width: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text('×', style: TextStyle(color: AppColors.textLight, fontSize: 12)),
+          ),
           Expanded(
+            flex: 3,
             child: NumberInputField(
               controller: _rateControllers[index],
               hint: '0',
               onChanged: (_) => _updateRowResult(index),
+              isUltraCompact: true,
             ),
           ),
-          const SizedBox(width: 8),
-          const Text('=', style: TextStyle(color: AppColors.textLight)),
-          const SizedBox(width: 8),
-          ValueDisplay(
-            value: _formatNumber(_results[index]),
-            width: 90,
-            isHighlighted:
-                _results[index] > 0,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text('=', style: TextStyle(color: AppColors.textLight, fontSize: 12)),
+          ),
+          Expanded(
+            flex: 3,
+            child: ValueDisplay(
+              value: _formatNumber(_results[index]),
+              isHighlighted: _results[index] > 0,
+              isUltraCompact: true,
+              minWidth: 50,
+            ),
           ),
         ],
       ),
@@ -263,7 +280,7 @@ class _TenDaysPageState extends State<TenDaysPage>
 
   Widget _buildTotalRow() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -271,42 +288,53 @@ class _TenDaysPageState extends State<TenDaysPage>
             AppColors.goldenHay.withOpacity(0.1),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.forestGreen.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          const SerialBadge(number: 'Σ', isTotal: true),
-          const SizedBox(width: 12),
+          const SerialBadge(number: 'Σ', isTotal: true, isCompact: true),
+          const SizedBox(width: 8),
           Expanded(
+            flex: 3,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: AppColors.goldenHay.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 _totalQuantity == 0 ? '—' : _formatNumber(_totalQuantity),
                 textAlign: TextAlign.center,
-                style: AppTextStyles.total,
+                style: AppTextStyles.total.copyWith(fontSize: 14),
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          const Text('', style: TextStyle(color: Colors.transparent)),
-          const SizedBox(width: 8),
-          const Expanded(child: SizedBox()),
-          const SizedBox(width: 8),
-          const Text('=', style: TextStyle(color: AppColors.forestGreen)),
-          const SizedBox(width: 8),
-          ValueDisplay(
-            value: _totalAmount == 0 ? '' : '₹${_formatNumber(_totalAmount)}',
-            width: 100,
-            isTotal: true,
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: SizedBox(width: 12),
+          ),
+          const Expanded(flex: 3, child: SizedBox()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text('=', style: TextStyle(color: AppColors.forestGreen, fontSize: 14)),
+          ),
+          Expanded(
+            flex: 3,
+            child: ValueDisplay(
+              value: _totalAmount == 0 ? '' : '₹${_formatNumber(_totalAmount)}',
+              isTotal: true,
+              isUltraCompact: true,
+              minWidth: 50,
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+
+
+
 
