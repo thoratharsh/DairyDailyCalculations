@@ -21,25 +21,33 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   bool _hasExistingData = false;
   int? _currentRecordId;
 
-  // Controllers
-  final _shillakLitresController = TextEditingController();
-  final _shillakRateController = TextEditingController();
-  final _collectionLitresController = TextEditingController();
-  final _collectionRateController = TextEditingController();
-  final _secondStockLitresController = TextEditingController();
-  final _secondStockRateController = TextEditingController();
-  final _tankerLitresController = TextEditingController();
-  final _tankerRateController = TextEditingController();
+  // Controllers for Colony, Ghoti, Center
+  final _colonyLitresController = TextEditingController();
+  final _colonyRateController = TextEditingController();
+  final _ghotiLitresController = TextEditingController();
+  final _ghotiRateController = TextEditingController();
+  final _centerLitresController = TextEditingController();
+  final _centerRateController = TextEditingController();
+
+  // Controllers for I, II, III
+  final _row1LitresController = TextEditingController();
+  final _row1RateController = TextEditingController();
+  final _row2LitresController = TextEditingController();
+  final _row2RateController = TextEditingController();
+  final _row3LitresController = TextEditingController();
+  final _row3RateController = TextEditingController();
 
   // Calculated values
-  double _shillakTotal = 0;
-  double _collectionTotal = 0;
-  double _stockCalcLitres = 0;
-  double _stockCalcTotal = 0;
-  double _secondStockTotal = 0;
-  double _todayLitres = 0;
-  double _todayTotal = 0;
-  double _tankerTotal = 0;
+  double _colonyTotal = 0;
+  double _ghotiTotal = 0;
+  double _centerTotal = 0;
+  double _total1Litres = 0;
+  double _total1Total = 0;
+  double _row1Total = 0;
+  double _row2Total = 0;
+  double _row3Total = 0;
+  double _total2Litres = 0;
+  double _total2Total = 0;
   double _finalDiffLitres = 0;
   double _finalDiffTotal = 0;
 
@@ -51,14 +59,18 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
 
   @override
   void dispose() {
-    _shillakLitresController.dispose();
-    _shillakRateController.dispose();
-    _collectionLitresController.dispose();
-    _collectionRateController.dispose();
-    _secondStockLitresController.dispose();
-    _secondStockRateController.dispose();
-    _tankerLitresController.dispose();
-    _tankerRateController.dispose();
+    _colonyLitresController.dispose();
+    _colonyRateController.dispose();
+    _ghotiLitresController.dispose();
+    _ghotiRateController.dispose();
+    _centerLitresController.dispose();
+    _centerRateController.dispose();
+    _row1LitresController.dispose();
+    _row1RateController.dispose();
+    _row2LitresController.dispose();
+    _row2RateController.dispose();
+    _row3LitresController.dispose();
+    _row3RateController.dispose();
     super.dispose();
   }
 
@@ -95,26 +107,29 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   /// Populate fields from a calculation object
   void _populateFromCalculation(DailyCalculation calc) {
     setState(() {
-      _shillakLitresController.text = _formatController(calc.shillakLitres);
-      _shillakRateController.text = _formatController(calc.shillakRate);
-      _collectionLitresController.text =
-          _formatController(calc.collectionLitres);
-      _collectionRateController.text = _formatController(calc.collectionRate);
-      _secondStockLitresController.text =
-          _formatController(calc.secondStockLitres);
-      _secondStockRateController.text =
-          _formatController(calc.secondStockRate);
-      _tankerLitresController.text = _formatController(calc.tankerLitres);
-      _tankerRateController.text = _formatController(calc.tankerRate);
+      _colonyLitresController.text = _formatController(calc.colonyLitres);
+      _colonyRateController.text = _formatController(calc.colonyRate);
+      _ghotiLitresController.text = _formatController(calc.ghotiLitres);
+      _ghotiRateController.text = _formatController(calc.ghotiRate);
+      _centerLitresController.text = _formatController(calc.centerLitres);
+      _centerRateController.text = _formatController(calc.centerRate);
+      _row1LitresController.text = _formatController(calc.row1Litres);
+      _row1RateController.text = _formatController(calc.row1Rate);
+      _row2LitresController.text = _formatController(calc.row2Litres);
+      _row2RateController.text = _formatController(calc.row2Rate);
+      _row3LitresController.text = _formatController(calc.row3Litres);
+      _row3RateController.text = _formatController(calc.row3Rate);
 
-      _shillakTotal = calc.shillakTotal;
-      _collectionTotal = calc.collectionTotal;
-      _stockCalcLitres = calc.stockCalcLitres;
-      _stockCalcTotal = calc.stockCalcTotal;
-      _secondStockTotal = calc.secondStockTotal;
-      _todayLitres = calc.todayLitres;
-      _todayTotal = calc.todayTotal;
-      _tankerTotal = calc.tankerTotal;
+      _colonyTotal = calc.colonyTotal;
+      _ghotiTotal = calc.ghotiTotal;
+      _centerTotal = calc.centerTotal;
+      _total1Litres = calc.total1Litres;
+      _total1Total = calc.total1Total;
+      _row1Total = calc.row1Total;
+      _row2Total = calc.row2Total;
+      _row3Total = calc.row3Total;
+      _total2Litres = calc.total2Litres;
+      _total2Total = calc.total2Total;
       _finalDiffLitres = calc.finalDiffLitres;
       _finalDiffTotal = calc.finalDiffTotal;
     });
@@ -129,43 +144,54 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
 
   /// Calculate and save to database
   Future<void> _calculateAndSave() async {
-    // Parse values
-    final shillakLitres =
-        double.tryParse(_shillakLitresController.text) ?? 0;
-    final shillakRate = double.tryParse(_shillakRateController.text) ?? 0;
-    final collectionLitres =
-        double.tryParse(_collectionLitresController.text) ?? 0;
-    final collectionRate =
-        double.tryParse(_collectionRateController.text) ?? 0;
-    final secondStockLitres =
-        double.tryParse(_secondStockLitresController.text) ?? 0;
-    final secondStockRate =
-        double.tryParse(_secondStockRateController.text) ?? 0;
-    final tankerLitres = double.tryParse(_tankerLitresController.text) ?? 0;
-    final tankerRate = double.tryParse(_tankerRateController.text) ?? 0;
+    // Parse Colony, Ghoti, Center values
+    final colonyLitres = double.tryParse(_colonyLitresController.text) ?? 0;
+    final colonyRate = double.tryParse(_colonyRateController.text) ?? 0;
+    final ghotiLitres = double.tryParse(_ghotiLitresController.text) ?? 0;
+    final ghotiRate = double.tryParse(_ghotiRateController.text) ?? 0;
+    final centerLitres = double.tryParse(_centerLitresController.text) ?? 0;
+    final centerRate = double.tryParse(_centerRateController.text) ?? 0;
 
-    // Calculate totals
-    final shillakTotal = shillakLitres * shillakRate;
-    final collectionTotal = collectionLitres * collectionRate;
-    final stockCalcLitres = shillakLitres + collectionLitres;
-    final stockCalcTotal = shillakTotal + collectionTotal;
-    final secondStockTotal = secondStockLitres * secondStockRate;
-    final todayLitres = stockCalcLitres - secondStockLitres;
-    final todayTotal = stockCalcTotal - secondStockTotal;
-    final tankerTotal = tankerLitres * tankerRate;
-    final finalDiffLitres = tankerLitres - todayLitres;
-    final finalDiffTotal = tankerTotal - todayTotal;
+    // Parse I, II, III values
+    final row1Litres = double.tryParse(_row1LitresController.text) ?? 0;
+    final row1Rate = double.tryParse(_row1RateController.text) ?? 0;
+    final row2Litres = double.tryParse(_row2LitresController.text) ?? 0;
+    final row2Rate = double.tryParse(_row2RateController.text) ?? 0;
+    final row3Litres = double.tryParse(_row3LitresController.text) ?? 0;
+    final row3Rate = double.tryParse(_row3RateController.text) ?? 0;
+
+    // Calculate individual totals
+    final colonyTotal = colonyLitres * colonyRate;
+    final ghotiTotal = ghotiLitres * ghotiRate;
+    final centerTotal = centerLitres * centerRate;
+    final row1Total = row1Litres * row1Rate;
+    final row2Total = row2Litres * row2Rate;
+    final row3Total = row3Litres * row3Rate;
+
+    // Calculate Total 1 (Colony + Ghoti + Center)
+    final total1Litres = colonyLitres + ghotiLitres + centerLitres;
+    final total1Total = colonyTotal + ghotiTotal + centerTotal;
+
+    // Calculate Total 2 (I + II + III)
+    final total2Litres = row1Litres + row2Litres + row3Litres;
+    final total2Total = row1Total + row2Total + row3Total;
+
+    // Calculate Final Difference (Total2 - Total1)
+    final finalDiffLitres = total2Litres - total1Litres;
+    final finalDiffTotal = total2Total - total1Total;
 
     // Update UI
     setState(() {
-      _shillakTotal = shillakTotal;
-      _collectionTotal = collectionTotal;
-      _stockCalcLitres = stockCalcLitres;
-      _stockCalcTotal = stockCalcTotal;
-      _secondStockTotal = secondStockTotal;
-      _todayLitres = todayLitres;
-      _todayTotal = todayTotal;
-      _tankerTotal = tankerTotal;
+      _colonyTotal = colonyTotal;
+      _ghotiTotal = ghotiTotal;
+      _centerTotal = centerTotal;
+      _total1Litres = total1Litres;
+      _total1Total = total1Total;
+      _row1Total = row1Total;
+      _row2Total = row2Total;
+      _row3Total = row3Total;
+      _total2Litres = total2Litres;
+      _total2Total = total2Total;
       _finalDiffLitres = finalDiffLitres;
       _finalDiffTotal = finalDiffTotal;
     });
@@ -174,22 +200,28 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     final calculation = DailyCalculation(
       id: _currentRecordId,
       date: _selectedDate,
-      shillakLitres: shillakLitres,
-      shillakRate: shillakRate,
-      shillakTotal: shillakTotal,
-      collectionLitres: collectionLitres,
-      collectionRate: collectionRate,
-      collectionTotal: collectionTotal,
-      stockCalcLitres: stockCalcLitres,
-      stockCalcTotal: stockCalcTotal,
-      secondStockLitres: secondStockLitres,
-      secondStockRate: secondStockRate,
-      secondStockTotal: secondStockTotal,
-      todayLitres: todayLitres,
-      todayTotal: todayTotal,
-      tankerLitres: tankerLitres,
-      tankerRate: tankerRate,
-      tankerTotal: tankerTotal,
+      colonyLitres: colonyLitres,
+      colonyRate: colonyRate,
+      colonyTotal: colonyTotal,
+      ghotiLitres: ghotiLitres,
+      ghotiRate: ghotiRate,
+      ghotiTotal: ghotiTotal,
+      centerLitres: centerLitres,
+      centerRate: centerRate,
+      centerTotal: centerTotal,
+      total1Litres: total1Litres,
+      total1Total: total1Total,
+      row1Litres: row1Litres,
+      row1Rate: row1Rate,
+      row1Total: row1Total,
+      row2Litres: row2Litres,
+      row2Rate: row2Rate,
+      row2Total: row2Total,
+      row3Litres: row3Litres,
+      row3Rate: row3Rate,
+      row3Total: row3Total,
+      total2Litres: total2Litres,
+      total2Total: total2Total,
       finalDiffLitres: finalDiffLitres,
       finalDiffTotal: finalDiffTotal,
     );
@@ -220,23 +252,29 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   /// Clear all fields
   void _clearAllFields() {
     setState(() {
-      _shillakLitresController.clear();
-      _shillakRateController.clear();
-      _collectionLitresController.clear();
-      _collectionRateController.clear();
-      _secondStockLitresController.clear();
-      _secondStockRateController.clear();
-      _tankerLitresController.clear();
-      _tankerRateController.clear();
+      _colonyLitresController.clear();
+      _colonyRateController.clear();
+      _ghotiLitresController.clear();
+      _ghotiRateController.clear();
+      _centerLitresController.clear();
+      _centerRateController.clear();
+      _row1LitresController.clear();
+      _row1RateController.clear();
+      _row2LitresController.clear();
+      _row2RateController.clear();
+      _row3LitresController.clear();
+      _row3RateController.clear();
 
-      _shillakTotal = 0;
-      _collectionTotal = 0;
-      _stockCalcLitres = 0;
-      _stockCalcTotal = 0;
-      _secondStockTotal = 0;
-      _todayLitres = 0;
-      _todayTotal = 0;
-      _tankerTotal = 0;
+      _colonyTotal = 0;
+      _ghotiTotal = 0;
+      _centerTotal = 0;
+      _total1Litres = 0;
+      _total1Total = 0;
+      _row1Total = 0;
+      _row2Total = 0;
+      _row3Total = 0;
+      _total2Litres = 0;
+      _total2Total = 0;
       _finalDiffLitres = 0;
       _finalDiffTotal = 0;
     });
@@ -607,42 +645,57 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildTableHeader(),
-          const Divider(color: AppColors.border, height: 16),
+          const Divider(color: AppColors.border, height: 12),
+          // Colony, Ghoti, Center section
           _buildInputRow(
-            'Shillak Stock',
-            _shillakLitresController,
-            _shillakRateController,
-            _formatNumber(_shillakTotal),
+            'Colony',
+            _colonyLitresController,
+            _colonyRateController,
+            _formatNumber(_colonyTotal),
           ),
           _buildInputRow(
-            'Collection',
-            _collectionLitresController,
-            _collectionRateController,
-            _formatNumber(_collectionTotal),
+            'Ghoti',
+            _ghotiLitresController,
+            _ghotiRateController,
+            _formatNumber(_ghotiTotal),
+          ),
+          _buildInputRow(
+            'Center',
+            _centerLitresController,
+            _centerRateController,
+            _formatNumber(_centerTotal),
           ),
           _buildCalculatedRow(
-            'Stock Calc',
-            _formatNumber(_stockCalcLitres),
-            _formatNumber(_stockCalcTotal),
-            isSubtotal: true,
-          ),
-          _buildInputRow(
-            'Second Stock',
-            _secondStockLitresController,
-            _secondStockRateController,
-            _formatNumber(_secondStockTotal),
-          ),
-          _buildCalculatedRow(
-            'Today Collection',
-            _formatNumber(_todayLitres),
-            _formatNumber(_todayTotal),
+            'Total 1',
+            _formatNumber(_total1Litres),
+            _formatNumber(_total1Total),
             isHighlighted: true,
           ),
+          const Divider(color: AppColors.border, height: 16),
+          // I, II, III section
           _buildInputRow(
-            'Tanker',
-            _tankerLitresController,
-            _tankerRateController,
-            _formatNumber(_tankerTotal),
+            'I',
+            _row1LitresController,
+            _row1RateController,
+            _formatNumber(_row1Total),
+          ),
+          _buildInputRow(
+            'II',
+            _row2LitresController,
+            _row2RateController,
+            _formatNumber(_row2Total),
+          ),
+          _buildInputRow(
+            'III',
+            _row3LitresController,
+            _row3RateController,
+            _formatNumber(_row3Total),
+          ),
+          _buildCalculatedRow(
+            'Total 2',
+            _formatNumber(_total2Litres),
+            _formatNumber(_total2Total),
+            isSubtotal: true,
           ),
         ],
       ),
@@ -846,9 +899,17 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                 size: 22,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Final Difference',
-                style: AppTextStyles.heading3.copyWith(fontSize: 16),
+              Column(
+                children: [
+                  Text(
+                    'Final Difference',
+                    style: AppTextStyles.heading3.copyWith(fontSize: 16),
+                  ),
+                  Text(
+                    '(Total 2 − Total 1)',
+                    style: AppTextStyles.caption.copyWith(fontSize: 10),
+                  ),
+                ],
               ),
             ],
           ),
@@ -1141,7 +1202,7 @@ class _HistoryPageState extends State<_HistoryPage> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Today: ${_formatNumber(calc.todayLitres)}L • ₹${_formatNumber(calc.todayTotal)}',
+                    'Total1: ${_formatNumber(calc.total1Litres)}L • ₹${_formatNumber(calc.total1Total)}',
                     style: AppTextStyles.caption,
                   ),
                 ],

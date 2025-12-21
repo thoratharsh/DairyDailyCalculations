@@ -50,7 +50,7 @@ class DatabaseService {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 1,
+        version: 2, // Bumped version for schema change
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       ),
@@ -59,26 +59,37 @@ class DatabaseService {
 
   /// Create database tables
   Future<void> _onCreate(Database db, int version) async {
+    await _createDailyCalculationsTable(db);
+  }
+
+  /// Create the daily_calculations table with new schema
+  Future<void> _createDailyCalculationsTable(Database db) async {
     await db.execute('''
       CREATE TABLE daily_calculations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL UNIQUE,
-        shillak_litres REAL DEFAULT 0,
-        shillak_rate REAL DEFAULT 0,
-        shillak_total REAL DEFAULT 0,
-        collection_litres REAL DEFAULT 0,
-        collection_rate REAL DEFAULT 0,
-        collection_total REAL DEFAULT 0,
-        stock_calc_litres REAL DEFAULT 0,
-        stock_calc_total REAL DEFAULT 0,
-        second_stock_litres REAL DEFAULT 0,
-        second_stock_rate REAL DEFAULT 0,
-        second_stock_total REAL DEFAULT 0,
-        today_litres REAL DEFAULT 0,
-        today_total REAL DEFAULT 0,
-        tanker_litres REAL DEFAULT 0,
-        tanker_rate REAL DEFAULT 0,
-        tanker_total REAL DEFAULT 0,
+        colony_litres REAL DEFAULT 0,
+        colony_rate REAL DEFAULT 0,
+        colony_total REAL DEFAULT 0,
+        ghoti_litres REAL DEFAULT 0,
+        ghoti_rate REAL DEFAULT 0,
+        ghoti_total REAL DEFAULT 0,
+        center_litres REAL DEFAULT 0,
+        center_rate REAL DEFAULT 0,
+        center_total REAL DEFAULT 0,
+        total1_litres REAL DEFAULT 0,
+        total1_total REAL DEFAULT 0,
+        row1_litres REAL DEFAULT 0,
+        row1_rate REAL DEFAULT 0,
+        row1_total REAL DEFAULT 0,
+        row2_litres REAL DEFAULT 0,
+        row2_rate REAL DEFAULT 0,
+        row2_total REAL DEFAULT 0,
+        row3_litres REAL DEFAULT 0,
+        row3_rate REAL DEFAULT 0,
+        row3_total REAL DEFAULT 0,
+        total2_litres REAL DEFAULT 0,
+        total2_total REAL DEFAULT 0,
         final_diff_litres REAL DEFAULT 0,
         final_diff_total REAL DEFAULT 0,
         created_at TEXT NOT NULL,
@@ -95,7 +106,12 @@ class DatabaseService {
 
   /// Handle database upgrades
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle future migrations here
+    // Version 2: Complete schema redesign - drop old table and create new
+    if (oldVersion < 2) {
+      await db.execute('DROP TABLE IF EXISTS daily_calculations');
+      await db.execute('DROP INDEX IF EXISTS idx_daily_calculations_date');
+      await _createDailyCalculationsTable(db);
+    }
   }
 
   // ============ CRUD Operations for Daily Calculations ============
@@ -248,10 +264,10 @@ class DatabaseService {
     final db = await database;
     final result = await db.rawQuery('''
       SELECT 
-        SUM(today_litres) as total_litres,
-        SUM(today_total) as total_amount,
-        AVG(today_litres) as avg_litres,
-        AVG(today_total) as avg_amount
+        SUM(total1_litres) as total_litres,
+        SUM(total1_total) as total_amount,
+        AVG(total1_litres) as avg_litres,
+        AVG(total1_total) as avg_amount
       FROM daily_calculations
     ''');
 
