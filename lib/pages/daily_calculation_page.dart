@@ -48,8 +48,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   double _row3Total = 0;
   double _total2Litres = 0;
   double _total2Total = 0;
-  double _finalDiffLitres = 0;
-  double _finalDiffTotal = 0;
+  double? _finalDiffLitres; // null = not calculated, show "—"
+  double? _finalDiffTotal;  // null = not calculated, show "—"
 
   @override
   void initState() {
@@ -275,8 +275,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       _row3Total = 0;
       _total2Litres = 0;
       _total2Total = 0;
-      _finalDiffLitres = 0;
-      _finalDiffTotal = 0;
+      _finalDiffLitres = null; // Reset to null to show "—"
+      _finalDiffTotal = null;
     });
   }
 
@@ -862,7 +862,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   }
 
   Widget _buildResultCard() {
-    final isPositive = _finalDiffTotal >= 0;
+    final hasValue = _finalDiffTotal != null;
+    final isPositive = (_finalDiffTotal ?? 0) >= 0;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -922,12 +923,15 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                   Text('Litres', style: AppTextStyles.caption),
                   const SizedBox(height: 2),
                   Text(
-                    _finalDiffLitres == 0
+                    _finalDiffLitres == null
                         ? '—'
-                        : _formatNumber(_finalDiffLitres),
+                        : (_finalDiffLitres == 0
+                            ? '0'
+                            : _formatNumber(_finalDiffLitres!)),
                     style: AppTextStyles.heading3.copyWith(
-                      color:
-                          isPositive ? AppColors.forestGreen : AppColors.barnRed,
+                      color: !hasValue
+                          ? AppColors.textLight
+                          : (isPositive ? AppColors.forestGreen : AppColors.barnRed),
                     ),
                   ),
                 ],
@@ -942,12 +946,15 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                   Text('Total Amt', style: AppTextStyles.caption),
                   const SizedBox(height: 2),
                   Text(
-                    _finalDiffTotal == 0
+                    _finalDiffTotal == null
                         ? '—'
-                        : '₹${_formatNumber(_finalDiffTotal)}',
+                        : (_finalDiffTotal == 0
+                            ? '₹0'
+                            : '₹${_formatNumber(_finalDiffTotal!)}'),
                     style: AppTextStyles.heading3.copyWith(
-                      color:
-                          isPositive ? AppColors.forestGreen : AppColors.barnRed,
+                      color: !hasValue
+                          ? AppColors.textLight
+                          : (isPositive ? AppColors.forestGreen : AppColors.barnRed),
                     ),
                   ),
                 ],
@@ -989,6 +996,9 @@ class _HistoryPageState extends State<_HistoryPage> {
     try {
       final calculations = await _dbService.getAllDailyCalculations();
       final summary = await _dbService.getDailyCalculationsSummary();
+
+      // Sort by date descending (latest first) as a safeguard
+      calculations.sort((a, b) => b.date.compareTo(a.date));
 
       if (!mounted) return;
 

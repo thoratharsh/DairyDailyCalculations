@@ -186,12 +186,6 @@ class _MonthlyPageState extends State<MonthlyPage>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _calculateAll,
-        backgroundColor: AppColors.forestGreen,
-        icon: const Icon(Icons.calculate_rounded),
-        label: const Text('Calculate'),
-      ),
     );
   }
 
@@ -267,8 +261,8 @@ class _MonthlyPageState extends State<MonthlyPage>
         Expanded(
           flex: 2,
           child: ActionButton(
-            text: 'Calculate Totals',
-            icon: Icons.calculate_rounded,
+            text: 'Calculate & Save',
+            icon: Icons.save_rounded,
             onPressed: _calculateAll,
           ),
         ),
@@ -341,7 +335,7 @@ class _MonthlyPageState extends State<MonthlyPage>
     return FadeTransition(
       opacity: _animController,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 70),
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         decoration: BoxDecoration(
           color: AppColors.warmWhite,
           borderRadius: BorderRadius.circular(12),
