@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_widgets.dart';
+import '../models/collection_centers.dart';
 import '../models/daily_calculation.dart';
 import '../services/database_service.dart';
 
@@ -21,13 +22,17 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   bool _hasExistingData = false;
   int? _currentRecordId;
 
-  // Controllers for Colony, Ghoti, Center
-  final _colonyLitresController = TextEditingController();
-  final _colonyRateController = TextEditingController();
-  final _ghotiLitresController = TextEditingController();
-  final _ghotiRateController = TextEditingController();
-  final _centerLitresController = TextEditingController();
-  final _centerRateController = TextEditingController();
+  static const double _labelWidth = 84;
+
+  // Controllers for Sangavi, Karkamb, Goti, and Tulshi
+  final _sangaviLitresController = TextEditingController();
+  final _sangaviRateController = TextEditingController();
+  final _karkambLitresController = TextEditingController();
+  final _karkambRateController = TextEditingController();
+  final _gotiLitresController = TextEditingController();
+  final _gotiRateController = TextEditingController();
+  final _tulshiLitresController = TextEditingController();
+  final _tulshiRateController = TextEditingController();
 
   // Controllers for I, II, III
   final _row1LitresController = TextEditingController();
@@ -38,9 +43,10 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   final _row3RateController = TextEditingController();
 
   // Calculated values
-  double _colonyTotal = 0;
-  double _ghotiTotal = 0;
-  double _centerTotal = 0;
+  double _sangaviTotal = 0;
+  double _karkambTotal = 0;
+  double _gotiTotal = 0;
+  double _tulshiTotal = 0;
   double _total1Litres = 0;
   double _total1Total = 0;
   double _row1Total = 0;
@@ -48,8 +54,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   double _row3Total = 0;
   double _total2Litres = 0;
   double _total2Total = 0;
-  double? _finalDiffLitres; // null = not calculated, show "—"
-  double? _finalDiffTotal;  // null = not calculated, show "—"
+  double? _combinedLitres; // null = not calculated, show "—"
+  double? _combinedTotal; // null = not calculated, show "—"
 
   @override
   void initState() {
@@ -59,12 +65,14 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
 
   @override
   void dispose() {
-    _colonyLitresController.dispose();
-    _colonyRateController.dispose();
-    _ghotiLitresController.dispose();
-    _ghotiRateController.dispose();
-    _centerLitresController.dispose();
-    _centerRateController.dispose();
+    _sangaviLitresController.dispose();
+    _sangaviRateController.dispose();
+    _karkambLitresController.dispose();
+    _karkambRateController.dispose();
+    _gotiLitresController.dispose();
+    _gotiRateController.dispose();
+    _tulshiLitresController.dispose();
+    _tulshiRateController.dispose();
     _row1LitresController.dispose();
     _row1RateController.dispose();
     _row2LitresController.dispose();
@@ -107,12 +115,14 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   /// Populate fields from a calculation object
   void _populateFromCalculation(DailyCalculation calc) {
     setState(() {
-      _colonyLitresController.text = _formatController(calc.colonyLitres);
-      _colonyRateController.text = _formatController(calc.colonyRate);
-      _ghotiLitresController.text = _formatController(calc.ghotiLitres);
-      _ghotiRateController.text = _formatController(calc.ghotiRate);
-      _centerLitresController.text = _formatController(calc.centerLitres);
-      _centerRateController.text = _formatController(calc.centerRate);
+      _sangaviLitresController.text = _formatController(calc.sangaviLitres);
+      _sangaviRateController.text = _formatController(calc.sangaviRate);
+      _karkambLitresController.text = _formatController(calc.karkambLitres);
+      _karkambRateController.text = _formatController(calc.karkambRate);
+      _gotiLitresController.text = _formatController(calc.gotiLitres);
+      _gotiRateController.text = _formatController(calc.gotiRate);
+      _tulshiLitresController.text = _formatController(calc.tulshiLitres);
+      _tulshiRateController.text = _formatController(calc.tulshiRate);
       _row1LitresController.text = _formatController(calc.row1Litres);
       _row1RateController.text = _formatController(calc.row1Rate);
       _row2LitresController.text = _formatController(calc.row2Litres);
@@ -120,9 +130,10 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       _row3LitresController.text = _formatController(calc.row3Litres);
       _row3RateController.text = _formatController(calc.row3Rate);
 
-      _colonyTotal = calc.colonyTotal;
-      _ghotiTotal = calc.ghotiTotal;
-      _centerTotal = calc.centerTotal;
+      _sangaviTotal = calc.sangaviTotal;
+      _karkambTotal = calc.karkambTotal;
+      _gotiTotal = calc.gotiTotal;
+      _tulshiTotal = calc.tulshiTotal;
       _total1Litres = calc.total1Litres;
       _total1Total = calc.total1Total;
       _row1Total = calc.row1Total;
@@ -130,8 +141,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       _row3Total = calc.row3Total;
       _total2Litres = calc.total2Litres;
       _total2Total = calc.total2Total;
-      _finalDiffLitres = calc.finalDiffLitres;
-      _finalDiffTotal = calc.finalDiffTotal;
+      _combinedLitres = calc.combinedLitres;
+      _combinedTotal = calc.combinedTotal;
     });
   }
 
@@ -144,13 +155,14 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
 
   /// Calculate and save to database
   Future<void> _calculateAndSave() async {
-    // Parse Colony, Ghoti, Center values
-    final colonyLitres = double.tryParse(_colonyLitresController.text) ?? 0;
-    final colonyRate = double.tryParse(_colonyRateController.text) ?? 0;
-    final ghotiLitres = double.tryParse(_ghotiLitresController.text) ?? 0;
-    final ghotiRate = double.tryParse(_ghotiRateController.text) ?? 0;
-    final centerLitres = double.tryParse(_centerLitresController.text) ?? 0;
-    final centerRate = double.tryParse(_centerRateController.text) ?? 0;
+    final sangaviLitres = double.tryParse(_sangaviLitresController.text) ?? 0;
+    final sangaviRate = double.tryParse(_sangaviRateController.text) ?? 0;
+    final karkambLitres = double.tryParse(_karkambLitresController.text) ?? 0;
+    final karkambRate = double.tryParse(_karkambRateController.text) ?? 0;
+    final gotiLitres = double.tryParse(_gotiLitresController.text) ?? 0;
+    final gotiRate = double.tryParse(_gotiRateController.text) ?? 0;
+    final tulshiLitres = double.tryParse(_tulshiLitresController.text) ?? 0;
+    final tulshiRate = double.tryParse(_tulshiRateController.text) ?? 0;
 
     // Parse I, II, III values
     final row1Litres = double.tryParse(_row1LitresController.text) ?? 0;
@@ -161,30 +173,33 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
     final row3Rate = double.tryParse(_row3RateController.text) ?? 0;
 
     // Calculate individual totals
-    final colonyTotal = colonyLitres * colonyRate;
-    final ghotiTotal = ghotiLitres * ghotiRate;
-    final centerTotal = centerLitres * centerRate;
+    final sangaviTotal = sangaviLitres * sangaviRate;
+    final karkambTotal = karkambLitres * karkambRate;
+    final gotiTotal = gotiLitres * gotiRate;
+    final tulshiTotal = tulshiLitres * tulshiRate;
     final row1Total = row1Litres * row1Rate;
     final row2Total = row2Litres * row2Rate;
     final row3Total = row3Litres * row3Rate;
 
-    // Calculate Total 1 (Colony + Ghoti + Center)
-    final total1Litres = colonyLitres + ghotiLitres + centerLitres;
-    final total1Total = colonyTotal + ghotiTotal + centerTotal;
+    // Total 1 is Sangavi + Karkamb + Goti + Tulshi.
+    final total1Litres =
+        sangaviLitres + karkambLitres + gotiLitres + tulshiLitres;
+    final total1Total = sangaviTotal + karkambTotal + gotiTotal + tulshiTotal;
 
     // Calculate Total 2 (I + II + III)
     final total2Litres = row1Litres + row2Litres + row3Litres;
     final total2Total = row1Total + row2Total + row3Total;
 
-    // Calculate Final Difference (Total2 - Total1)
-    final finalDiffLitres = total2Litres - total1Litres;
-    final finalDiffTotal = total2Total - total1Total;
+    // Combined total is Total 1 plus Total 2.
+    final combinedLitres = total1Litres + total2Litres;
+    final combinedTotal = total1Total + total2Total;
 
     // Update UI
     setState(() {
-      _colonyTotal = colonyTotal;
-      _ghotiTotal = ghotiTotal;
-      _centerTotal = centerTotal;
+      _sangaviTotal = sangaviTotal;
+      _karkambTotal = karkambTotal;
+      _gotiTotal = gotiTotal;
+      _tulshiTotal = tulshiTotal;
       _total1Litres = total1Litres;
       _total1Total = total1Total;
       _row1Total = row1Total;
@@ -192,23 +207,26 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       _row3Total = row3Total;
       _total2Litres = total2Litres;
       _total2Total = total2Total;
-      _finalDiffLitres = finalDiffLitres;
-      _finalDiffTotal = finalDiffTotal;
+      _combinedLitres = combinedLitres;
+      _combinedTotal = combinedTotal;
     });
 
     // Create calculation object
     final calculation = DailyCalculation(
       id: _currentRecordId,
       date: _selectedDate,
-      colonyLitres: colonyLitres,
-      colonyRate: colonyRate,
-      colonyTotal: colonyTotal,
-      ghotiLitres: ghotiLitres,
-      ghotiRate: ghotiRate,
-      ghotiTotal: ghotiTotal,
-      centerLitres: centerLitres,
-      centerRate: centerRate,
-      centerTotal: centerTotal,
+      sangaviLitres: sangaviLitres,
+      sangaviRate: sangaviRate,
+      sangaviTotal: sangaviTotal,
+      karkambLitres: karkambLitres,
+      karkambRate: karkambRate,
+      karkambTotal: karkambTotal,
+      gotiLitres: gotiLitres,
+      gotiRate: gotiRate,
+      gotiTotal: gotiTotal,
+      tulshiLitres: tulshiLitres,
+      tulshiRate: tulshiRate,
+      tulshiTotal: tulshiTotal,
       total1Litres: total1Litres,
       total1Total: total1Total,
       row1Litres: row1Litres,
@@ -222,8 +240,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       row3Total: row3Total,
       total2Litres: total2Litres,
       total2Total: total2Total,
-      finalDiffLitres: finalDiffLitres,
-      finalDiffTotal: finalDiffTotal,
+      combinedLitres: combinedLitres,
+      combinedTotal: combinedTotal,
     );
 
     // Save to database
@@ -252,12 +270,14 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   /// Clear all fields
   void _clearAllFields() {
     setState(() {
-      _colonyLitresController.clear();
-      _colonyRateController.clear();
-      _ghotiLitresController.clear();
-      _ghotiRateController.clear();
-      _centerLitresController.clear();
-      _centerRateController.clear();
+      _sangaviLitresController.clear();
+      _sangaviRateController.clear();
+      _karkambLitresController.clear();
+      _karkambRateController.clear();
+      _gotiLitresController.clear();
+      _gotiRateController.clear();
+      _tulshiLitresController.clear();
+      _tulshiRateController.clear();
       _row1LitresController.clear();
       _row1RateController.clear();
       _row2LitresController.clear();
@@ -265,9 +285,10 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       _row3LitresController.clear();
       _row3RateController.clear();
 
-      _colonyTotal = 0;
-      _ghotiTotal = 0;
-      _centerTotal = 0;
+      _sangaviTotal = 0;
+      _karkambTotal = 0;
+      _gotiTotal = 0;
+      _tulshiTotal = 0;
       _total1Litres = 0;
       _total1Total = 0;
       _row1Total = 0;
@@ -275,8 +296,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       _row3Total = 0;
       _total2Litres = 0;
       _total2Total = 0;
-      _finalDiffLitres = null; // Reset to null to show "—"
-      _finalDiffTotal = null;
+      _combinedLitres = null; // Reset to null to show "—"
+      _combinedTotal = null;
     });
   }
 
@@ -381,7 +402,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+            const Icon(Icons.check_circle_outline,
+                color: Colors.white, size: 20),
             const SizedBox(width: 12),
             Text(message),
           ],
@@ -606,7 +628,8 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
               onPressed: _deleteRecord,
-              icon: Icon(Icons.delete_outline_rounded, color: AppColors.barnRed),
+              icon:
+                  Icon(Icons.delete_outline_rounded, color: AppColors.barnRed),
               tooltip: 'Delete entry',
               style: IconButton.styleFrom(
                 backgroundColor: AppColors.barnRed.withValues(alpha: 0.1),
@@ -646,24 +669,29 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
         children: [
           _buildTableHeader(),
           const Divider(color: AppColors.border, height: 12),
-          // Colony, Ghoti, Center section
           _buildInputRow(
-            'Colony',
-            _colonyLitresController,
-            _colonyRateController,
-            _formatNumber(_colonyTotal),
+            CollectionCenters.sangavi,
+            _sangaviLitresController,
+            _sangaviRateController,
+            _formatNumber(_sangaviTotal),
           ),
           _buildInputRow(
-            'Ghoti',
-            _ghotiLitresController,
-            _ghotiRateController,
-            _formatNumber(_ghotiTotal),
+            CollectionCenters.karkamb,
+            _karkambLitresController,
+            _karkambRateController,
+            _formatNumber(_karkambTotal),
           ),
           _buildInputRow(
-            'Center',
-            _centerLitresController,
-            _centerRateController,
-            _formatNumber(_centerTotal),
+            CollectionCenters.goti,
+            _gotiLitresController,
+            _gotiRateController,
+            _formatNumber(_gotiTotal),
+          ),
+          _buildInputRow(
+            CollectionCenters.tulshi,
+            _tulshiLitresController,
+            _tulshiRateController,
+            _formatNumber(_tulshiTotal),
           ),
           _buildCalculatedRow(
             'Total 1',
@@ -708,26 +736,30 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       child: Row(
         children: [
           SizedBox(
-            width: 75,
-            child: Text('Item', style: AppTextStyles.caption.copyWith(fontSize: 11)),
+            width: _labelWidth,
+            child: Text('Item',
+                style: AppTextStyles.caption.copyWith(fontSize: 11)),
           ),
           Expanded(
             flex: 3,
             child: Center(
-              child: Text('Litres', style: AppTextStyles.caption.copyWith(fontSize: 11)),
+              child: Text('Litres',
+                  style: AppTextStyles.caption.copyWith(fontSize: 11)),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             flex: 3,
             child: Center(
-              child: Text('Rate ₹', style: AppTextStyles.caption.copyWith(fontSize: 11)),
+              child: Text('Rate ₹',
+                  style: AppTextStyles.caption.copyWith(fontSize: 11)),
             ),
           ),
           Expanded(
             flex: 4,
             child: Text('Total ₹',
-                style: AppTextStyles.caption.copyWith(fontSize: 11), textAlign: TextAlign.right),
+                style: AppTextStyles.caption.copyWith(fontSize: 11),
+                textAlign: TextAlign.right),
           ),
         ],
       ),
@@ -744,7 +776,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          RowLabel(text: label, width: 75),
+          RowLabel(text: label, width: _labelWidth),
           Expanded(
             flex: 3,
             child: NumberInputField(
@@ -817,7 +849,7 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
         children: [
           RowLabel(
             text: label,
-            width: 75,
+            width: _labelWidth,
             isSubLabel: isSubtotal,
           ),
           Expanded(
@@ -834,7 +866,9 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w600,
-                  color: isHighlighted ? AppColors.forestGreen : AppColors.textPrimary,
+                  color: isHighlighted
+                      ? AppColors.forestGreen
+                      : AppColors.textPrimary,
                   fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
@@ -862,29 +896,22 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
   }
 
   Widget _buildResultCard() {
-    final hasValue = _finalDiffTotal != null;
-    final isPositive = (_finalDiffTotal ?? 0) >= 0;
+    final hasValue = _combinedTotal != null;
+    final valueColor = hasValue ? AppColors.forestGreen : AppColors.textLight;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: isPositive
-              ? [
-                  AppColors.forestGreen.withValues(alpha: 0.1),
-                  AppColors.forestGreen.withValues(alpha: 0.05),
-                ]
-              : [
-                  AppColors.barnRed.withValues(alpha: 0.1),
-                  AppColors.barnRed.withValues(alpha: 0.05),
-                ],
+          colors: [
+            AppColors.forestGreen.withValues(alpha: 0.1),
+            AppColors.forestGreen.withValues(alpha: 0.05),
+          ],
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isPositive
-              ? AppColors.forestGreen.withValues(alpha: 0.3)
-              : AppColors.barnRed.withValues(alpha: 0.3),
+          color: AppColors.forestGreen.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -893,21 +920,19 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                isPositive
-                    ? Icons.trending_up_rounded
-                    : Icons.trending_down_rounded,
-                color: isPositive ? AppColors.forestGreen : AppColors.barnRed,
+                Icons.add_rounded,
+                color: AppColors.forestGreen,
                 size: 22,
               ),
               const SizedBox(width: 8),
               Column(
                 children: [
                   Text(
-                    'Final Difference',
+                    'Total',
                     style: AppTextStyles.heading3.copyWith(fontSize: 16),
                   ),
                   Text(
-                    '(Total 2 − Total 1)',
+                    '(Total 1 + Total 2)',
                     style: AppTextStyles.caption.copyWith(fontSize: 10),
                   ),
                 ],
@@ -923,16 +948,12 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                   Text('Litres', style: AppTextStyles.caption),
                   const SizedBox(height: 2),
                   Text(
-                    _finalDiffLitres == null
+                    _combinedLitres == null
                         ? '—'
-                        : (_finalDiffLitres == 0
+                        : (_combinedLitres == 0
                             ? '0'
-                            : _formatNumber(_finalDiffLitres!)),
-                    style: AppTextStyles.heading3.copyWith(
-                      color: !hasValue
-                          ? AppColors.textLight
-                          : (isPositive ? AppColors.forestGreen : AppColors.barnRed),
-                    ),
+                            : _formatNumber(_combinedLitres!)),
+                    style: AppTextStyles.heading3.copyWith(color: valueColor),
                   ),
                 ],
               ),
@@ -946,16 +967,12 @@ class _DailyCalculationPageState extends State<DailyCalculationPage> {
                   Text('Total Amt', style: AppTextStyles.caption),
                   const SizedBox(height: 2),
                   Text(
-                    _finalDiffTotal == null
+                    _combinedTotal == null
                         ? '—'
-                        : (_finalDiffTotal == 0
+                        : (_combinedTotal == 0
                             ? '₹0'
-                            : '₹${_formatNumber(_finalDiffTotal!)}'),
-                    style: AppTextStyles.heading3.copyWith(
-                      color: !hasValue
-                          ? AppColors.textLight
-                          : (isPositive ? AppColors.forestGreen : AppColors.barnRed),
-                    ),
+                            : '₹${_formatNumber(_combinedTotal!)}'),
+                    style: AppTextStyles.heading3.copyWith(color: valueColor),
                   ),
                 ],
               ),
@@ -1154,8 +1171,6 @@ class _HistoryPageState extends State<_HistoryPage> {
   }
 
   Widget _buildHistoryItem(DailyCalculation calc) {
-    final isPositive = calc.finalDiffTotal >= 0;
-
     return GestureDetector(
       onTap: () {
         widget.onDateSelected(calc.date);
@@ -1221,33 +1236,17 @@ class _HistoryPageState extends State<_HistoryPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      isPositive
-                          ? Icons.trending_up_rounded
-                          : Icons.trending_down_rounded,
-                      size: 14,
-                      color: isPositive
-                          ? AppColors.forestGreen
-                          : AppColors.barnRed,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '₹${_formatNumber(calc.finalDiffTotal)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isPositive
-                            ? AppColors.forestGreen
-                            : AppColors.barnRed,
-                      ),
-                    ),
-                  ],
+                Text(
+                  '₹${_formatNumber(calc.combinedTotal)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.forestGreen,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Diff',
+                  'Total',
                   style: AppTextStyles.caption,
                 ),
               ],

@@ -243,8 +243,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         page: const DailyCalculationPage(),
       ),
       _CalculationType(
-        title: '10 Days',
-        subtitle: 'Track 10-day collection period',
+        title: '11 Days',
+        subtitle: 'Track 11-day collection period',
         icon: Icons.date_range_rounded,
         color: AppColors.skyBlue,
         secondaryColor: const Color(0xFF8BB8D9),
@@ -405,4 +405,3 @@ class _CalculationType {
     required this.page,
   });
 }
-

@@ -3,22 +3,21 @@ class DailyCalculation {
   final int? id;
   final DateTime date;
 
-  // Colony (was Shillak Stock)
-  final double colonyLitres;
-  final double colonyRate;
-  final double colonyTotal;
+  // Section 1 centers. Each total is litres × rate.
+  final double sangaviLitres;
+  final double sangaviRate;
+  final double sangaviTotal;
+  final double karkambLitres;
+  final double karkambRate;
+  final double karkambTotal;
+  final double gotiLitres;
+  final double gotiRate;
+  final double gotiTotal;
+  final double tulshiLitres;
+  final double tulshiRate;
+  final double tulshiTotal;
 
-  // Ghoti (was Collection)
-  final double ghotiLitres;
-  final double ghotiRate;
-  final double ghotiTotal;
-
-  // Center (new)
-  final double centerLitres;
-  final double centerRate;
-  final double centerTotal;
-
-  // Total 1 (Colony + Ghoti + Center)
+  // Total 1 (Sangavi + Karkamb + Goti + Tulshi)
   final double total1Litres;
   final double total1Total;
 
@@ -41,9 +40,10 @@ class DailyCalculation {
   final double total2Litres;
   final double total2Total;
 
-  // Final Difference (Total1 - Total2)
-  final double finalDiffLitres;
-  final double finalDiffTotal;
+  // Combined total of both sections (Total 1 + Total 2).
+  // Kept in the existing final_diff columns so older saved days still open.
+  final double combinedLitres;
+  final double combinedTotal;
 
   // Timestamps
   final DateTime createdAt;
@@ -52,15 +52,18 @@ class DailyCalculation {
   DailyCalculation({
     this.id,
     required this.date,
-    this.colonyLitres = 0,
-    this.colonyRate = 0,
-    this.colonyTotal = 0,
-    this.ghotiLitres = 0,
-    this.ghotiRate = 0,
-    this.ghotiTotal = 0,
-    this.centerLitres = 0,
-    this.centerRate = 0,
-    this.centerTotal = 0,
+    this.sangaviLitres = 0,
+    this.sangaviRate = 0,
+    this.sangaviTotal = 0,
+    this.karkambLitres = 0,
+    this.karkambRate = 0,
+    this.karkambTotal = 0,
+    this.gotiLitres = 0,
+    this.gotiRate = 0,
+    this.gotiTotal = 0,
+    this.tulshiLitres = 0,
+    this.tulshiRate = 0,
+    this.tulshiTotal = 0,
     this.total1Litres = 0,
     this.total1Total = 0,
     this.row1Litres = 0,
@@ -74,8 +77,8 @@ class DailyCalculation {
     this.row3Total = 0,
     this.total2Litres = 0,
     this.total2Total = 0,
-    this.finalDiffLitres = 0,
-    this.finalDiffTotal = 0,
+    this.combinedLitres = 0,
+    this.combinedTotal = 0,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : createdAt = createdAt ?? DateTime.now(),
@@ -86,15 +89,18 @@ class DailyCalculation {
     return {
       'id': id,
       'date': date.toIso8601String().split('T')[0], // Store as YYYY-MM-DD
-      'colony_litres': colonyLitres,
-      'colony_rate': colonyRate,
-      'colony_total': colonyTotal,
-      'ghoti_litres': ghotiLitres,
-      'ghoti_rate': ghotiRate,
-      'ghoti_total': ghotiTotal,
-      'center_litres': centerLitres,
-      'center_rate': centerRate,
-      'center_total': centerTotal,
+      'sangavi_litres': sangaviLitres,
+      'sangavi_rate': sangaviRate,
+      'sangavi_total': sangaviTotal,
+      'karkamb_litres': karkambLitres,
+      'karkamb_rate': karkambRate,
+      'karkamb_total': karkambTotal,
+      'goti_litres': gotiLitres,
+      'goti_rate': gotiRate,
+      'goti_total': gotiTotal,
+      'tulshi_litres': tulshiLitres,
+      'tulshi_rate': tulshiRate,
+      'tulshi_total': tulshiTotal,
       'total1_litres': total1Litres,
       'total1_total': total1Total,
       'row1_litres': row1Litres,
@@ -108,8 +114,8 @@ class DailyCalculation {
       'row3_total': row3Total,
       'total2_litres': total2Litres,
       'total2_total': total2Total,
-      'final_diff_litres': finalDiffLitres,
-      'final_diff_total': finalDiffTotal,
+      'final_diff_litres': combinedLitres,
+      'final_diff_total': combinedTotal,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -120,15 +126,18 @@ class DailyCalculation {
     return DailyCalculation(
       id: map['id'] as int?,
       date: DateTime.parse(map['date'] as String),
-      colonyLitres: (map['colony_litres'] as num?)?.toDouble() ?? 0,
-      colonyRate: (map['colony_rate'] as num?)?.toDouble() ?? 0,
-      colonyTotal: (map['colony_total'] as num?)?.toDouble() ?? 0,
-      ghotiLitres: (map['ghoti_litres'] as num?)?.toDouble() ?? 0,
-      ghotiRate: (map['ghoti_rate'] as num?)?.toDouble() ?? 0,
-      ghotiTotal: (map['ghoti_total'] as num?)?.toDouble() ?? 0,
-      centerLitres: (map['center_litres'] as num?)?.toDouble() ?? 0,
-      centerRate: (map['center_rate'] as num?)?.toDouble() ?? 0,
-      centerTotal: (map['center_total'] as num?)?.toDouble() ?? 0,
+      sangaviLitres: (map['sangavi_litres'] as num?)?.toDouble() ?? 0,
+      sangaviRate: (map['sangavi_rate'] as num?)?.toDouble() ?? 0,
+      sangaviTotal: (map['sangavi_total'] as num?)?.toDouble() ?? 0,
+      karkambLitres: (map['karkamb_litres'] as num?)?.toDouble() ?? 0,
+      karkambRate: (map['karkamb_rate'] as num?)?.toDouble() ?? 0,
+      karkambTotal: (map['karkamb_total'] as num?)?.toDouble() ?? 0,
+      gotiLitres: (map['goti_litres'] as num?)?.toDouble() ?? 0,
+      gotiRate: (map['goti_rate'] as num?)?.toDouble() ?? 0,
+      gotiTotal: (map['goti_total'] as num?)?.toDouble() ?? 0,
+      tulshiLitres: (map['tulshi_litres'] as num?)?.toDouble() ?? 0,
+      tulshiRate: (map['tulshi_rate'] as num?)?.toDouble() ?? 0,
+      tulshiTotal: (map['tulshi_total'] as num?)?.toDouble() ?? 0,
       total1Litres: (map['total1_litres'] as num?)?.toDouble() ?? 0,
       total1Total: (map['total1_total'] as num?)?.toDouble() ?? 0,
       row1Litres: (map['row1_litres'] as num?)?.toDouble() ?? 0,
@@ -142,8 +151,10 @@ class DailyCalculation {
       row3Total: (map['row3_total'] as num?)?.toDouble() ?? 0,
       total2Litres: (map['total2_litres'] as num?)?.toDouble() ?? 0,
       total2Total: (map['total2_total'] as num?)?.toDouble() ?? 0,
-      finalDiffLitres: (map['final_diff_litres'] as num?)?.toDouble() ?? 0,
-      finalDiffTotal: (map['final_diff_total'] as num?)?.toDouble() ?? 0,
+      combinedLitres: (map['total1_litres'] as num? ?? 0).toDouble() +
+          (map['total2_litres'] as num? ?? 0).toDouble(),
+      combinedTotal: (map['total1_total'] as num? ?? 0).toDouble() +
+          (map['total2_total'] as num? ?? 0).toDouble(),
       createdAt: DateTime.parse(map['created_at'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );
@@ -153,15 +164,18 @@ class DailyCalculation {
   DailyCalculation copyWith({
     int? id,
     DateTime? date,
-    double? colonyLitres,
-    double? colonyRate,
-    double? colonyTotal,
-    double? ghotiLitres,
-    double? ghotiRate,
-    double? ghotiTotal,
-    double? centerLitres,
-    double? centerRate,
-    double? centerTotal,
+    double? sangaviLitres,
+    double? sangaviRate,
+    double? sangaviTotal,
+    double? karkambLitres,
+    double? karkambRate,
+    double? karkambTotal,
+    double? gotiLitres,
+    double? gotiRate,
+    double? gotiTotal,
+    double? tulshiLitres,
+    double? tulshiRate,
+    double? tulshiTotal,
     double? total1Litres,
     double? total1Total,
     double? row1Litres,
@@ -175,23 +189,26 @@ class DailyCalculation {
     double? row3Total,
     double? total2Litres,
     double? total2Total,
-    double? finalDiffLitres,
-    double? finalDiffTotal,
+    double? combinedLitres,
+    double? combinedTotal,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return DailyCalculation(
       id: id ?? this.id,
       date: date ?? this.date,
-      colonyLitres: colonyLitres ?? this.colonyLitres,
-      colonyRate: colonyRate ?? this.colonyRate,
-      colonyTotal: colonyTotal ?? this.colonyTotal,
-      ghotiLitres: ghotiLitres ?? this.ghotiLitres,
-      ghotiRate: ghotiRate ?? this.ghotiRate,
-      ghotiTotal: ghotiTotal ?? this.ghotiTotal,
-      centerLitres: centerLitres ?? this.centerLitres,
-      centerRate: centerRate ?? this.centerRate,
-      centerTotal: centerTotal ?? this.centerTotal,
+      sangaviLitres: sangaviLitres ?? this.sangaviLitres,
+      sangaviRate: sangaviRate ?? this.sangaviRate,
+      sangaviTotal: sangaviTotal ?? this.sangaviTotal,
+      karkambLitres: karkambLitres ?? this.karkambLitres,
+      karkambRate: karkambRate ?? this.karkambRate,
+      karkambTotal: karkambTotal ?? this.karkambTotal,
+      gotiLitres: gotiLitres ?? this.gotiLitres,
+      gotiRate: gotiRate ?? this.gotiRate,
+      gotiTotal: gotiTotal ?? this.gotiTotal,
+      tulshiLitres: tulshiLitres ?? this.tulshiLitres,
+      tulshiRate: tulshiRate ?? this.tulshiRate,
+      tulshiTotal: tulshiTotal ?? this.tulshiTotal,
       total1Litres: total1Litres ?? this.total1Litres,
       total1Total: total1Total ?? this.total1Total,
       row1Litres: row1Litres ?? this.row1Litres,
@@ -205,8 +222,8 @@ class DailyCalculation {
       row3Total: row3Total ?? this.row3Total,
       total2Litres: total2Litres ?? this.total2Litres,
       total2Total: total2Total ?? this.total2Total,
-      finalDiffLitres: finalDiffLitres ?? this.finalDiffLitres,
-      finalDiffTotal: finalDiffTotal ?? this.finalDiffTotal,
+      combinedLitres: combinedLitres ?? this.combinedLitres,
+      combinedTotal: combinedTotal ?? this.combinedTotal,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
@@ -215,6 +232,6 @@ class DailyCalculation {
   @override
   String toString() {
     return 'DailyCalculation(id: $id, date: ${date.toIso8601String().split('T')[0]}, '
-        'total1: $total1Total, total2: $total2Total, diff: $finalDiffTotal)';
+        'total1: $total1Total, total2: $total2Total, combined: $combinedTotal)';
   }
 }

@@ -13,7 +13,7 @@ void main() {
 
     // Verify calculation type cards are present
     expect(find.text('Daily Calculation'), findsOneWidget);
-    expect(find.text('10 Days Calculation'), findsOneWidget);
+    expect(find.text('11 Days Calculation'), findsOneWidget);
     expect(find.text('Monthly Calculation'), findsOneWidget);
   });
 }

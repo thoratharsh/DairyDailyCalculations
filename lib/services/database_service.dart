@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/daily_calculation.dart';
+import '../models/ten_day_calculation.dart';
 
 /// Service class for SQLite database operations
 class DatabaseService {
@@ -50,7 +51,7 @@ class DatabaseService {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 2, // Bumped version for schema change
+        version: 4, // v4 replaces section 1 with Sangavi, Karkamb, Goti, Tulshi
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       ),
@@ -60,6 +61,7 @@ class DatabaseService {
   /// Create database tables
   Future<void> _onCreate(Database db, int version) async {
     await _createDailyCalculationsTable(db);
+    await _createTenDayCalculationsTable(db);
   }
 
   /// Create the daily_calculations table with new schema
@@ -68,15 +70,18 @@ class DatabaseService {
       CREATE TABLE daily_calculations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL UNIQUE,
-        colony_litres REAL DEFAULT 0,
-        colony_rate REAL DEFAULT 0,
-        colony_total REAL DEFAULT 0,
-        ghoti_litres REAL DEFAULT 0,
-        ghoti_rate REAL DEFAULT 0,
-        ghoti_total REAL DEFAULT 0,
-        center_litres REAL DEFAULT 0,
-        center_rate REAL DEFAULT 0,
-        center_total REAL DEFAULT 0,
+        sangavi_litres REAL DEFAULT 0,
+        sangavi_rate REAL DEFAULT 0,
+        sangavi_total REAL DEFAULT 0,
+        karkamb_litres REAL DEFAULT 0,
+        karkamb_rate REAL DEFAULT 0,
+        karkamb_total REAL DEFAULT 0,
+        goti_litres REAL DEFAULT 0,
+        goti_rate REAL DEFAULT 0,
+        goti_total REAL DEFAULT 0,
+        tulshi_litres REAL DEFAULT 0,
+        tulshi_rate REAL DEFAULT 0,
+        tulshi_total REAL DEFAULT 0,
         total1_litres REAL DEFAULT 0,
         total1_total REAL DEFAULT 0,
         row1_litres REAL DEFAULT 0,
@@ -104,6 +109,29 @@ class DatabaseService {
     ''');
   }
 
+  /// One 11-day sheet per center and date.
+  Future<void> _createTenDayCalculationsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE ten_day_calculations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        center TEXT NOT NULL,
+        date TEXT NOT NULL,
+        quantities TEXT NOT NULL,
+        rates TEXT NOT NULL,
+        total_quantity REAL DEFAULT 0,
+        total_amount REAL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(center, date)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_ten_day_calculations_date
+      ON ten_day_calculations (date)
+    ''');
+  }
+
   /// Handle database upgrades
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Version 2: Complete schema redesign - drop old table and create new
@@ -111,6 +139,69 @@ class DatabaseService {
       await db.execute('DROP TABLE IF EXISTS daily_calculations');
       await db.execute('DROP INDEX IF EXISTS idx_daily_calculations_date');
       await _createDailyCalculationsTable(db);
+    } else if (oldVersion < 3) {
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN center2_litres REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN center2_rate REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN center2_total REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN center3_litres REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN center3_rate REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN center3_total REAL DEFAULT 0',
+      );
+    }
+
+    if (oldVersion < 3) {
+      await _createTenDayCalculationsTable(db);
+    }
+
+    // Existing daily rows stay. The four centers start at 0 until resaved.
+    if (oldVersion >= 2 && oldVersion < 4) {
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN sangavi_litres REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN sangavi_rate REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN sangavi_total REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN karkamb_litres REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN karkamb_rate REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN karkamb_total REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN goti_litres REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN goti_rate REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN goti_total REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN tulshi_litres REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN tulshi_rate REAL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE daily_calculations ADD COLUMN tulshi_total REAL DEFAULT 0',
+      );
     }
   }
 
@@ -288,6 +379,79 @@ class DatabaseService {
       'avg_amount': (row['avg_amount'] as num?)?.toDouble() ?? 0,
     };
   }
+
+  // ============ CRUD Operations for 11-Day Calculations ============
+
+  /// Insert or replace the sheet for this center and date.
+  Future<int> saveTenDayCalculation(TenDayCalculation calculation) async {
+    final existing = await getTenDayCalculation(
+      calculation.center,
+      calculation.date,
+    );
+    if (existing != null) {
+      final updated = calculation.copyWith(
+        id: existing.id,
+        createdAt: existing.createdAt,
+      );
+      return updateTenDayCalculation(updated);
+    }
+    return insertTenDayCalculation(calculation);
+  }
+
+  Future<int> insertTenDayCalculation(TenDayCalculation calculation) async {
+    final db = await database;
+    return db.insert(
+      'ten_day_calculations',
+      calculation.toMap()..remove('id'),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<int> updateTenDayCalculation(TenDayCalculation calculation) async {
+    final db = await database;
+    return db.update(
+      'ten_day_calculations',
+      calculation.toMap(),
+      where: 'id = ?',
+      whereArgs: [calculation.id],
+    );
+  }
+
+  Future<TenDayCalculation?> getTenDayCalculation(
+    String center,
+    DateTime date,
+  ) async {
+    final db = await database;
+    final results = await db.query(
+      'ten_day_calculations',
+      where: 'center = ? AND date = ?',
+      whereArgs: [center, _dateKey(date)],
+      limit: 1,
+    );
+    if (results.isEmpty) return null;
+    return TenDayCalculation.fromMap(results.first);
+  }
+
+  /// Newest date first. Each row is one center on one date.
+  Future<List<TenDayCalculation>> getAllTenDayCalculations() async {
+    final db = await database;
+    final results = await db.query(
+      'ten_day_calculations',
+      orderBy: 'date DESC, center ASC',
+    );
+    return results.map(TenDayCalculation.fromMap).toList();
+  }
+
+  Future<int> deleteTenDayCalculation(int id) async {
+    final db = await database;
+    return db.delete(
+      'ten_day_calculations',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  String _dateKey(DateTime date) => date.toIso8601String().split('T')[0];
 
   /// Close the database
   Future<void> close() async {
